@@ -5,7 +5,6 @@ from telethon import TelegramClient, events, Button
 API_ID = int(os.environ.get("API_ID"))
 API_HASH = os.environ.get("API_HASH")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-
 OWNER = os.environ.get("OWNER", "0")
 SELLER = os.environ.get("SELLER", "0")
 
@@ -42,7 +41,6 @@ async def login_flow(event):
     uid = event.sender_id
     if uid in login_state:
         step = login_state[uid]["step"]
-
         if step == "phone":
             phone = event.raw_text.strip()
             login_state[uid]["phone"] = phone
@@ -50,7 +48,6 @@ async def login_flow(event):
             await userbot.send_code_request(phone)
             login_state[uid]["step"] = "code"
             await event.respond("Kode OTP sudah dikirim, masukkan di sini:")
-
         elif step == "code":
             code = event.raw_text.strip()
             phone = login_state[uid]["phone"]
@@ -64,7 +61,6 @@ async def login_flow(event):
                     await event.respond("Akun ini pakai 2FA. Masukkan password:")
                 else:
                     await event.respond(f"❌ Gagal login: {e}")
-
         elif step == "password":
             pwd = event.raw_text.strip()
             phone = login_state[uid]["phone"]
@@ -200,4 +196,6 @@ async def add_prem(event):
             premium_users[uid] = expiry
         await event.respond(f"✅ Premium diberikan ke {len(user_ids)} user sampai {expiry}.")
     else:
-        await
+        await event.respond("❌ Hanya Owner/Seller bisa tambah Premium.")
+
+bot.run_until_disconnected()
