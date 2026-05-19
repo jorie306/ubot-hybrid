@@ -4,7 +4,7 @@ import os
 # Ambil dari environment Railway (atau bisa langsung hardcode)
 api_id = int(os.environ.get("API_ID", 38256227))
 api_hash = os.environ.get("API_HASH", "bdc312902b33113152901ded68b30c20")
-bot_token = os.environ.get("BOT_TOKEN", "8613795654:AAG6Y8dGTowwEMa7Aab9R8Vq508hfXWgW38I")
+bot_token = os.environ.get("BOT_TOKEN")
 
 # Userbot session (akun pribadi)
 userbot = TelegramClient('user_session', api_id, api_hash)
