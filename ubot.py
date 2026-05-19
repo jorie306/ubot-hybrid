@@ -14,7 +14,7 @@ userbot = TelegramClient("user_session", API_ID, API_HASH)
 
 async def start_userbot():
     await userbot.start()
-    print("Userbot aktif!")
+    print("✅ Userbot aktif!")
 
 # Database
 premium_users = {}   # {user_id: expiry_date}
@@ -181,5 +181,5 @@ async def reset_userbot(event):
     else:
         await event.respond("❌ Durasi Premium kamu sudah habis. Hubungi Owner/Seller untuk perpanjangan.")
 
-print("Bot berjalan...")
+print("🚀 Bot berjalan...")
 bot.run_until_disconnected()
