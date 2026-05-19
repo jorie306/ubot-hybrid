@@ -1,6 +1,5 @@
 import os
 import datetime
-import json
 from telethon import TelegramClient, events, Button
 
 # Environment Variables
@@ -15,10 +14,10 @@ userbot = TelegramClient("user_session", API_ID, API_HASH)
 
 # Data Storage
 login_state = {}
-premium_users = {}  # {user_id: expiry_datetime}
+premium_users = {}
 seller_users = set()
-auto_replies = {}  # {chat_id: {"texts": [], "channels": [], "items": [], "active": bool}}
-autobc_config = {}  # {user_id: {"basic": {"list": [], "rounds": 1, "active": False}, "forward": {"list": [], "rounds": 1, "active": False}}}
+auto_replies = {}
+autobc_config = {}
 blacklist = set()
 
 # ==================== HELPER FUNCTIONS ====================
@@ -138,8 +137,11 @@ async def tutor(event):
         "• Masukkan OTP & password 2FA\n\n"
         "**2. AutoBC (Broadcast):**\n"
         "• `.autobc basic save` - Simpan pesan\n"
-        "• `.autobc rounds 180` - Set delay\n"
-        "• `.autobc basic on/off` - Aktif/Nonaktif\n\n"
+        "• `.autobc basic rounds 180` - Set delay\n"
+        "• `.autobc basic on/off` - Aktif/Nonaktif\n"
+        "• `.autobc forward save` - Simpan forward\n"
+        "• `.autobc forward rounds 180` - Set delay\n"
+        "• `.autobc forward on/off` - Aktif/Nonaktif\n\n"
         "**3. AutoReply:**\n"
         "• `/addtext` - Simpan text balasan\n"
         "• `/addchannel` - Tambah channel\n"
@@ -430,7 +432,6 @@ async def del_user(event):
     try:
         user_id = int(event.raw_text.split()[1])
         
-        # Hapus dari semua list
         seller_users.discard(user_id)
         if user_id in premium_users:
             del premium_users[user_id]
