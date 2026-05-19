@@ -2,9 +2,9 @@ from telethon import TelegramClient, events, Button
 import os
 
 # Ambil dari environment Railway (atau bisa langsung hardcode)
-api_id = int(os.environ.get("API_ID")
-api_hash = os.environ.get("API_HASH")
-bot_token = os.environ.get("BOT_TOKEN")
+api_id = int(os.environ.get("API_ID"))
+api_hash = os.environ.get("API_HASH"))
+bot_token = os.environ.get("BOT_TOKEN"))
 
 # Userbot session (akun pribadi)
 userbot = TelegramClient('user_session', api_id, api_hash)
