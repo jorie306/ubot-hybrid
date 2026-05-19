@@ -2,8 +2,8 @@ from telethon import TelegramClient, events, Button
 import os
 
 # Ambil dari environment Railway (atau bisa langsung hardcode)
-api_id = int(os.environ.get("API_ID", 38256227))
-api_hash = os.environ.get("API_HASH", "bdc312902b33113152901ded68b30c20")
+api_id = int(os.environ.get("API_ID")
+api_hash = os.environ.get("API_HASH")
 bot_token = os.environ.get("BOT_TOKEN")
 
 # Userbot session (akun pribadi)
