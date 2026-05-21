@@ -11,6 +11,7 @@ from pyrogram.types import (
 )
 
 from panel import load_panel
+from broadcast import load_broadcast
 
 # =========================================
 # VARIABLES
@@ -28,14 +29,16 @@ app = Client(
     "StoreBot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN
+    bot_token=BOT_TOKEN,
+    workers=100
 )
 
 # =========================================
-# LOAD PANEL
+# LOAD MODULES
 # =========================================
 
 load_panel(app)
+load_broadcast(app)
 
 # =========================================
 # START BUTTON
@@ -47,39 +50,100 @@ START_BUTTON = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 "👑 Premium",
                 callback_data="premium"
+            ),
+            InlineKeyboardButton(
+                "🛒 Buy",
+                callback_data="buy"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📣 Channel",
+                url="https://t.me/usernamechannel"
             )
         ]
     ]
 )
 
 # =========================================
-# START
+# START COMMAND
 # =========================================
 
 @app.on_message(filters.command("start"))
 async def start(_, msg):
 
+    text = """
+🤖 STOREBOT ACTIVE
+
+✅ Bot Online
+✅ Broadcast Ready
+✅ Panel Ready
+✅ Railway Connected
+"""
+
     await msg.reply(
-        "✅ STOREBOT ONLINE",
+        text,
         reply_markup=START_BUTTON
     )
 
 # =========================================
-# HELP
+# HELP COMMAND
 # =========================================
 
 @app.on_message(filters.command("help"))
 async def help_cmd(_, msg):
 
-    await msg.reply(
-        """
-📌 COMMANDS
+    text = """
+📌 STOREBOT MENU
 
-/start
-/help
-/panel
+AVAILABLE COMMANDS:
+
+• /start
+• /help
+• /panel
+• /bc
+
+👑 OWNER:
+• /addadmin
+• /addseller
+• /addprem
+
+📣 BROADCAST:
+• /bc pesan
 """
-    )
+
+    await msg.reply(text)
+
+# =========================================
+# CALLBACK BUTTON
+# =========================================
+
+@app.on_callback_query()
+async def callback(_, query):
+
+    data = query.data
+
+    # PREMIUM
+    if data == "premium":
+
+        await query.message.reply(
+            """
+👑 PREMIUM ACCESS
+
+Hubungi owner untuk membeli akses premium.
+"""
+        )
+
+    # BUY
+    elif data == "buy":
+
+        await query.message.reply(
+            """
+🛒 PEMBELIAN PREMIUM
+
+Silahkan hubungi owner/admin.
+"""
+        )
 
 # =========================================
 # ONLINE
