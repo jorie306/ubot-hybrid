@@ -10,6 +10,8 @@ from pyrogram.types import (
     InlineKeyboardButton
 )
 
+from panel import load_panel
+
 # =========================================
 # VARIABLES
 # =========================================
@@ -26,15 +28,14 @@ app = Client(
     "StoreBot",
     api_id=API_ID,
     api_hash=API_HASH,
-    bot_token=BOT_TOKEN,
-    workers=100
+    bot_token=BOT_TOKEN
 )
 
 # =========================================
-# IMPORT MODULES
+# LOAD PANEL
 # =========================================
 
-from modules import panel
+load_panel(app)
 
 # =========================================
 # START BUTTON
@@ -46,71 +47,39 @@ START_BUTTON = InlineKeyboardMarkup(
             InlineKeyboardButton(
                 "👑 Premium",
                 callback_data="premium"
-            ),
-            InlineKeyboardButton(
-                "🛒 Buy",
-                callback_data="buy"
             )
         ]
     ]
 )
 
 # =========================================
-# START COMMAND
+# START
 # =========================================
 
 @app.on_message(filters.command("start"))
 async def start(_, msg):
 
-    text = """
-🤖 STOREBOT ACTIVE
-
-✅ Bot Online
-✅ Railway Connected
-"""
-
     await msg.reply(
-        text,
+        "✅ STOREBOT ONLINE",
         reply_markup=START_BUTTON
     )
 
 # =========================================
-# HELP COMMAND
+# HELP
 # =========================================
 
 @app.on_message(filters.command("help"))
 async def help_cmd(_, msg):
 
-    text = """
-📌 STOREBOT MENU
+    await msg.reply(
+        """
+📌 COMMANDS
 
-AVAILABLE:
-• /panel
-• /help
+/start
+/help
+/panel
 """
-
-    await msg.reply(text)
-
-# =========================================
-# CALLBACK BUTTON
-# =========================================
-
-@app.on_callback_query()
-async def callback(_, query):
-
-    data = query.data
-
-    if data == "premium":
-
-        await query.message.reply(
-            "👑 Premium menu active"
-        )
-
-    elif data == "buy":
-
-        await query.message.reply(
-            "🛒 Hubungi owner untuk membeli premium"
-        )
+    )
 
 # =========================================
 # ONLINE
