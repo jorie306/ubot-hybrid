@@ -1,4 +1,6 @@
 import os
+import sqlite3
+import asyncio
 
 from pyrogram import (
     Client,
@@ -11,7 +13,6 @@ from pyrogram.types import (
 )
 
 from panel import load_panel
-from broadcast import load_broadcast
 
 # =========================================
 # VARIABLES
@@ -20,6 +21,25 @@ from broadcast import load_broadcast
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+# =========================================
+# DATABASE
+# =========================================
+
+db = sqlite3.connect(
+    "storebot.db",
+    check_same_thread=False
+)
+
+cursor = db.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY
+)
+""")
+
+db.commit()
 
 # =========================================
 # CLIENT
@@ -34,11 +54,10 @@ app = Client(
 )
 
 # =========================================
-# LOAD MODULES
+# LOAD PANEL
 # =========================================
 
 load_panel(app)
-load_broadcast(app)
 
 # =========================================
 # START BUTTON
@@ -71,6 +90,15 @@ START_BUTTON = InlineKeyboardMarkup(
 
 @app.on_message(filters.command("start"))
 async def start(_, msg):
+
+    user_id = msg.from_user.id
+
+    cursor.execute(
+        "INSERT OR IGNORE INTO users(user_id) VALUES(?)",
+        (user_id,)
+    )
+
+    db.commit()
 
     text = """
 🤖 STOREBOT ACTIVE
@@ -115,6 +143,65 @@ AVAILABLE COMMANDS:
     await msg.reply(text)
 
 # =========================================
+# BROADCAST
+# =========================================
+
+@app.on_message(filters.command("bc"))
+async def broadcast(_, msg):
+
+    if len(msg.command) < 2:
+
+        return await msg.reply(
+            "Usage:\n/bc pesan"
+        )
+
+    text = msg.text.split(
+        None,
+        1
+    )[1]
+
+    cursor.execute(
+        "SELECT user_id FROM users"
+    )
+
+    users = cursor.fetchall()
+
+    success = 0
+    failed = 0
+
+    status = await msg.reply(
+        "📣 Broadcasting..."
+    )
+
+    for user in users:
+
+        user_id = user[0]
+
+        try:
+
+            await app.send_message(
+                user_id,
+                f"📢 BROADCAST\n\n{text}"
+            )
+
+            success += 1
+
+            await asyncio.sleep(1)
+
+        except:
+
+            failed += 1
+
+    await status.edit_text(
+        f"""
+✅ Broadcast selesai
+
+✔ Success : {success}
+❌ Failed : {failed}
+"""
+    )
+
+# =========================================
 # CALLBACK BUTTON
 # =========================================
 
@@ -123,7 +210,6 @@ async def callback(_, query):
 
     data = query.data
 
-    # PREMIUM
     if data == "premium":
 
         await query.message.reply(
@@ -134,7 +220,6 @@ Hubungi owner untuk membeli akses premium.
 """
         )
 
-    # BUY
     elif data == "buy":
 
         await query.message.reply(
