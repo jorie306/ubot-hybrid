@@ -31,10 +31,10 @@ app = Client(
 )
 
 # =========================================
-# IMPORT PANEL
+# IMPORT MODULES
 # =========================================
 
-import panel
+from modules import panel
 
 # =========================================
 # START BUTTON
