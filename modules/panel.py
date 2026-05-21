@@ -1,15 +1,19 @@
-# =========================================
-# OWNER / ADMIN / SELLER / PREM PANEL
-# MODULE SYSTEM
-# =========================================
-
-from pyrogram import filters
+from pyrogram import filters, Client
 from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
 
-from main import app
+# =========================================
+# APP
+# =========================================
+
+app = Client.get_instance()
+
+# =========================================
+# DATABASE IMPORT
+# =========================================
+
 from database import (
     get_role,
     set_role,
@@ -17,7 +21,7 @@ from database import (
 )
 
 # =========================================
-# OWNER PANEL BUTTON
+# OWNER PANEL
 # =========================================
 
 OWNER_PANEL = InlineKeyboardMarkup(
@@ -25,34 +29,34 @@ OWNER_PANEL = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(
                 "👑 Add Admin",
-                callback_data="owner_addadmin"
+                callback_data="add_admin"
             ),
             InlineKeyboardButton(
                 "🛒 Add Seller",
-                callback_data="owner_addseller"
+                callback_data="add_seller"
             )
         ],
         [
             InlineKeyboardButton(
                 "💎 Add Premium",
-                callback_data="owner_addprem"
+                callback_data="add_prem"
             ),
             InlineKeyboardButton(
                 "📣 Broadcast",
-                callback_data="owner_bc"
+                callback_data="broadcast"
             )
         ],
         [
             InlineKeyboardButton(
-                "📊 Stats",
-                callback_data="owner_stats"
+                "📊 Statistics",
+                callback_data="stats"
             )
         ]
     ]
 )
 
 # =========================================
-# ADMIN PANEL BUTTON
+# ADMIN PANEL
 # =========================================
 
 ADMIN_PANEL = InlineKeyboardMarkup(
@@ -71,7 +75,7 @@ ADMIN_PANEL = InlineKeyboardMarkup(
 )
 
 # =========================================
-# SELLER PANEL BUTTON
+# SELLER PANEL
 # =========================================
 
 SELLER_PANEL = InlineKeyboardMarkup(
@@ -90,7 +94,7 @@ SELLER_PANEL = InlineKeyboardMarkup(
 # =========================================
 
 @app.on_message(filters.command("panel"))
-async def panel(_, msg):
+async def panel_menu(_, msg):
 
     user_id = msg.from_user.id
     role = get_role(user_id)
@@ -102,12 +106,7 @@ async def panel(_, msg):
             """
 👑 OWNER PANEL
 
-Available Access:
-• Add Admin
-• Add Seller
-• Add Premium
-• Broadcast
-• Full Control
+✅ Full Access Enabled
 """,
             reply_markup=OWNER_PANEL
         )
@@ -119,9 +118,7 @@ Available Access:
             """
 🛠 ADMIN PANEL
 
-Available Access:
-• Add Seller
-• Add Premium
+✅ Admin Access Enabled
 """,
             reply_markup=ADMIN_PANEL
         )
@@ -133,13 +130,12 @@ Available Access:
             """
 🛒 SELLER PANEL
 
-Available Access:
-• Add Premium
+✅ Seller Access Enabled
 """,
             reply_markup=SELLER_PANEL
         )
 
-    # PREM / FREE
+    # FREE / PREM
     else:
 
         return await msg.reply(
@@ -172,7 +168,7 @@ async def add_admin(_, msg):
     )
 
 # =========================================
-# DEL ADMIN
+# DELETE ADMIN
 # =========================================
 
 @app.on_message(filters.command("deladmin"))
@@ -222,7 +218,7 @@ async def add_seller(_, msg):
     )
 
 # =========================================
-# DEL SELLER
+# DELETE SELLER
 # =========================================
 
 @app.on_message(filters.command("delseller"))
@@ -272,7 +268,7 @@ async def add_prem(_, msg):
     )
 
 # =========================================
-# DEL PREMIUM
+# DELETE PREMIUM
 # =========================================
 
 @app.on_message(filters.command("delprem"))
@@ -297,70 +293,70 @@ async def del_prem(_, msg):
     )
 
 # =========================================
-# OWNER CALLBACKS
+# CALLBACK BUTTONS
 # =========================================
 
 @app.on_callback_query()
-async def owner_callbacks(_, query):
+async def callback_handler(_, query):
 
     data = query.data
-    user_id = query.from_user.id
-    role = get_role(user_id)
+    role = get_role(query.from_user.id)
 
     # OWNER CALLBACK
     if role == "OWNER":
 
-        if data == "owner_addadmin":
+        if data == "add_admin":
 
             return await query.message.reply(
                 """
 👑 ADD ADMIN
 
-Command:
+Gunakan:
 /addadmin user_id
 """
             )
 
-        elif data == "owner_addseller":
+        elif data == "add_seller":
 
             return await query.message.reply(
                 """
 🛒 ADD SELLER
 
-Command:
+Gunakan:
 /addseller user_id
 """
             )
 
-        elif data == "owner_addprem":
+        elif data == "add_prem":
 
             return await query.message.reply(
                 """
 💎 ADD PREMIUM
 
-Command:
+Gunakan:
 /addprem user_id
 """
             )
 
-        elif data == "owner_bc":
+        elif data == "broadcast":
 
             return await query.message.reply(
                 """
 📣 BROADCAST
 
-Command:
+Gunakan:
 /bc pesan
 """
             )
 
-        elif data == "owner_stats":
+        elif data == "stats":
 
             return await query.message.reply(
                 """
-📊 BOT STATS
+📊 BOT STATISTICS
 
-System Online ✅
+✅ System Online
+✅ Panel Active
 """
             )
 
@@ -373,7 +369,7 @@ System Online ✅
                 """
 🛒 ADD SELLER
 
-Command:
+Gunakan:
 /addseller user_id
 """
             )
@@ -384,7 +380,7 @@ Command:
                 """
 💎 ADD PREMIUM
 
-Command:
+Gunakan:
 /addprem user_id
 """
             )
@@ -398,13 +394,13 @@ Command:
                 """
 💎 ADD PREMIUM
 
-Command:
+Gunakan:
 /addprem user_id
 """
             )
 
 # =========================================
-# HELP MENU
+# ROLE HELP
 # =========================================
 
 @app.on_message(filters.command("rolehelp"))
@@ -422,7 +418,7 @@ async def role_help(_, msg):
 
         text += """
 
-👑 OWNER:
+👑 OWNER COMMANDS
 • /panel
 • /addadmin
 • /deladmin
@@ -438,7 +434,7 @@ async def role_help(_, msg):
 
         text += """
 
-🛠 ADMIN:
+🛠 ADMIN COMMANDS
 • /panel
 • /addseller
 • /delseller
@@ -450,7 +446,7 @@ async def role_help(_, msg):
 
         text += """
 
-🛒 SELLER:
+🛒 SELLER COMMANDS
 • /panel
 • /addprem
 • /delprem
@@ -460,7 +456,7 @@ async def role_help(_, msg):
 
         text += """
 
-💎 PREMIUM:
+💎 PREMIUM COMMANDS
 • /help
 • /afk
 """
