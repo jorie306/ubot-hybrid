@@ -1,16 +1,20 @@
-from pyrogram import filters
+from pyrogram import (
+    filters,
+    Client
+)
+
 from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
 
-from database import (
+app = Client.get_instance()
+
+from modules.database import (
     get_role,
     set_role,
     has_access
 )
-
-from main import app
 
 # =========================================
 # BUTTON PANEL
@@ -46,7 +50,6 @@ async def panel_cmd(_, msg):
 
     role = get_role(msg.from_user.id)
 
-    # OWNER
     if role == "OWNER":
 
         return await msg.reply(
@@ -54,25 +57,22 @@ async def panel_cmd(_, msg):
             reply_markup=OWNER_PANEL
         )
 
-    # ADMIN
     elif role == "ADMIN":
 
         return await msg.reply(
             "🛠 ADMIN PANEL ACTIVE"
         )
 
-    # SELLER
     elif role == "SELLER":
 
         return await msg.reply(
             "🛒 SELLER PANEL ACTIVE"
         )
 
-    # NO ACCESS
     else:
 
         return await msg.reply(
-            "❌ Kamu bukan owner/admin/seller"
+            "❌ Kamu tidak memiliki akses"
         )
 
 # =========================================
@@ -165,7 +165,6 @@ async def callback_handler(_, query):
 
     data = query.data
 
-    # OWNER BUTTONS
     if data == "add_admin":
 
         await query.message.reply(
