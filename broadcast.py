@@ -15,6 +15,14 @@ db = sqlite3.connect(
 
 cursor = db.cursor()
 
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY
+)
+""")
+
+db.commit()
+
 # =========================================
 # SAVE USER
 # =========================================
@@ -75,6 +83,12 @@ def load_broadcast(app):
 
         users = cursor.fetchall()
 
+        if not users:
+
+            return await msg.reply(
+                "❌ Tidak ada user tersimpan"
+            )
+
         success = 0
         failed = 0
 
@@ -95,7 +109,7 @@ def load_broadcast(app):
 
                 success += 1
 
-                await asyncio.sleep(1.5)
+                await asyncio.sleep(2)
 
             except:
 
