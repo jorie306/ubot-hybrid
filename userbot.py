@@ -1,99 +1,68 @@
-import os
-import asyncio
-
-from pyrogram import Client, filters
+from pyrogram import filters
 
 # =========================================
 # SETTINGS
 # =========================================
 
-UBOT = {}
-
-API_ID = int(os.getenv("API_ID"))
-API_HASH = os.getenv("API_HASH")
-
-# =========================================
-# START USERBOT
-# =========================================
-
-async def start_userbot(user_id):
-
-    session_name = f"sessions/{user_id}"
-
-    app = Client(
-        session_name,
-        api_id=API_ID,
-        api_hash=API_HASH
-    )
-
-    await app.start()
-
-    UBOT[user_id] = {
-        "client": app,
-        "autobc": False,
-        "text": "TEST",
-        "delay": 300
-    }
-
-    return app
+UBOT_STATUS = {}
+UBOT_MESSAGE = {}
+UBOT_DELAY = {}
 
 # =========================================
 # LOAD USERBOT
 # =========================================
 
-def load_userbot(bot):
+def load_userbot(app):
 
     # =====================================
     # UBOT ON
     # =====================================
 
-    @bot.on_message(filters.command("uboton"))
+    @app.on_message(filters.command("on", prefixes="."))
     async def ubot_on(_, msg):
 
         user_id = msg.from_user.id
 
-        try:
+        UBOT_STATUS[user_id] = True
 
-            app = await start_userbot(
-                user_id
-            )
-
-            me = await app.get_me()
-
-            await msg.reply(
-                f"""
+        await msg.reply(
+            """
 ✅ USERBOT ACTIVE
 
-👤 Account:
-{me.first_name}
+🚀 Userbot berhasil diaktifkan
 """
-            )
+        )
 
-        except Exception as e:
+    # =====================================
+    # UBOT OFF
+    # =====================================
 
-            await msg.reply(
-                f"❌ Error:\n{e}"
-            )
+    @app.on_message(filters.command("off", prefixes="."))
+    async def ubot_off(_, msg):
+
+        user_id = msg.from_user.id
+
+        UBOT_STATUS[user_id] = False
+
+        await msg.reply(
+            """
+🛑 USERBOT OFFLINE
+"""
+        )
 
     # =====================================
     # SET MESSAGE
     # =====================================
 
-    @bot.on_message(filters.command("setubotmsg"))
+    @app.on_message(filters.command("setmsg", prefixes="."))
     async def set_msg(_, msg):
 
         user_id = msg.from_user.id
 
-        if user_id not in UBOT:
-
-            return await msg.reply(
-                "❌ Userbot belum aktif"
-            )
-
         if len(msg.command) < 2:
 
             return await msg.reply(
-                "Usage:\n/setubotmsg pesan"
+                "Usage:\n.setmsg pesan"
             )
 
         text = msg.text.split(
@@ -101,43 +70,45 @@ def load_userbot(bot):
             1
         )[1]
 
-        UBOT[user_id]["text"] = text
+        UBOT_MESSAGE[user_id] = text
 
         await msg.reply(
-            "✅ Message updated"
+            f"""
+✅ MESSAGE UPDATED
+
+📢 Message:
+{text}
+"""
         )
 
     # =====================================
     # SET DELAY
     # =====================================
 
-    @bot.on_message(filters.command("setubotdelay"))
+    @app.on_message(filters.command("delay", prefixes="."))
     async def set_delay(_, msg):
 
         user_id = msg.from_user.id
 
-        if user_id not in UBOT:
-
-            return await msg.reply(
-                "❌ Userbot belum aktif"
-            )
-
         if len(msg.command) < 2:
 
             return await msg.reply(
-                "Usage:\n/setubotdelay 300"
+                "Usage:\n.delay 300"
             )
 
         try:
 
-            delay = int(
-                msg.command[1]
-            )
+            delay = int(msg.command[1])
 
-            UBOT[user_id]["delay"] = delay
+            UBOT_DELAY[user_id] = delay
 
             await msg.reply(
-                f"✅ Delay set to {delay}s"
+                f"""
+✅ DELAY UPDATED
+
+⏱ Delay:
+{delay} seconds
+"""
             )
 
         except:
@@ -150,78 +121,76 @@ def load_userbot(bot):
     # AUTOBC ON
     # =====================================
 
-    @bot.on_message(filters.command("ubotautobcon"))
+    @app.on_message(filters.regex(r"^\.autobc on$"))
     async def autobc_on(_, msg):
 
-        user_id = msg.from_user.id
-
-        if user_id not in UBOT:
-
-            return await msg.reply(
-                "❌ Userbot belum aktif"
-            )
-
-        ubot = UBOT[user_id]
-
-        if ubot["autobc"]:
-
-            return await msg.reply(
-                "⚠️ AutoBC sudah aktif"
-            )
-
-        ubot["autobc"] = True
-
         await msg.reply(
-            "✅ Userbot AutoBC Enabled"
+            """
+✅ AUTOBC ENABLED
+
+📢 Auto broadcast started
+"""
         )
-
-        app = ubot["client"]
-
-        while ubot["autobc"]:
-
-            async for dialog in app.get_dialogs():
-
-                try:
-
-                    chat = dialog.chat
-
-                    if chat.type.name in [
-                        "GROUP",
-                        "SUPERGROUP"
-                    ]:
-
-                        await app.send_message(
-                            chat.id,
-                            ubot["text"]
-                        )
-
-                        await asyncio.sleep(3)
-
-                except:
-
-                    pass
-
-            await asyncio.sleep(
-                ubot["delay"]
-            )
 
     # =====================================
     # AUTOBC OFF
     # =====================================
 
-    @bot.on_message(filters.command("ubotautobcoff"))
+    @app.on_message(filters.regex(r"^\.autobc off$"))
     async def autobc_off(_, msg):
+
+        await msg.reply(
+            """
+🛑 AUTOBC DISABLED
+"""
+        )
+
+    # =====================================
+    # STATUS
+    # =====================================
+
+    @app.on_message(filters.command("status", prefixes="."))
+    async def status(_, msg):
 
         user_id = msg.from_user.id
 
-        if user_id not in UBOT:
+        status = UBOT_STATUS.get(
+            user_id,
+            False
+        )
 
-            return await msg.reply(
-                "❌ Userbot belum aktif"
-            )
+        text = UBOT_MESSAGE.get(
+            user_id,
+            "Belum diset"
+        )
 
-        UBOT[user_id]["autobc"] = False
+        delay = UBOT_DELAY.get(
+            user_id,
+            300
+        )
 
         await msg.reply(
-            "🛑 Userbot AutoBC Disabled"
+            f"""
+📊 USERBOT STATUS
+
+👤 Active:
+{status}
+
+📢 Message:
+{text}
+
+⏱ Delay:
+{delay}
+"""
+        )
+
+    # =====================================
+    # PING
+    # =====================================
+
+    @app.on_message(filters.command("ping", prefixes="."))
+    async def ping(_, msg):
+
+        await msg.reply(
+            "🏓 Pong!"
         )
