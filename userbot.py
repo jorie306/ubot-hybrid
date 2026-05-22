@@ -1,20 +1,25 @@
-print("USERBOT MODULE LOADED")
+import asyncio
+import os
 
-from pyrogram import filters
+from pyrogram import Client, filters
 
 # =========================================
-# USERBOT DATA
+# VARIABLES
 # =========================================
+
+API_ID = int(os.getenv("API_ID"))
+API_HASH = os.getenv("API_HASH")
 
 ACTIVE_UBOT = {}
+UBOT_MESSAGE = {}
+UBOT_DELAY = {}
+AUTO_BC = {}
 
 # =========================================
 # LOAD USERBOT
 # =========================================
 
 def load_userbot(app):
-
-    print("LOAD USERBOT BERHASIL")
 
     # =====================================
     # /on
@@ -26,8 +31,6 @@ def load_userbot(app):
         user_id = message.from_user.id
 
         ACTIVE_UBOT[user_id] = True
-
-        print("COMMAND ON MASUK")
 
         await message.reply_text(
             """
@@ -48,7 +51,7 @@ def load_userbot(app):
 
         ACTIVE_UBOT[user_id] = False
 
-        print("COMMAND OFF MASUK")
+        AUTO_BC[user_id] = False
 
         await message.reply_text(
             "🛑 USERBOT OFFLINE"
@@ -68,7 +71,20 @@ def load_userbot(app):
             False
         )
 
-        print("COMMAND STATUS MASUK")
+        delay = UBOT_DELAY.get(
+            user_id,
+            300
+        )
+
+        text = UBOT_MESSAGE.get(
+            user_id,
+            "Belum diset"
+        )
+
+        autobc = AUTO_BC.get(
+            user_id,
+            False
+        )
 
         await message.reply_text(
             f"""
@@ -76,5 +92,171 @@ def load_userbot(app):
 
 👤 Active:
 {status}
+
+📢 Message:
+{text}
+
+⏱ Delay:
+{delay}
+
+🔁 AutoBC:
+{autobc}
+"""
+        )
+
+    # =====================================
+    # /setmsg
+    # =====================================
+
+    @app.on_message(filters.command("setmsg"))
+    async def setmsg(client, message):
+
+        user_id = message.from_user.id
+
+        if len(message.command) < 2:
+
+            return await message.reply_text(
+                "Usage:\n/setmsg halo"
+            )
+
+        text = message.text.split(
+            None,
+            1
+        )[1]
+
+        UBOT_MESSAGE[user_id] = text
+
+        await message.reply_text(
+            f"""
+✅ MESSAGE UPDATED
+
+📢 Message:
+{text}
+"""
+        )
+
+    # =====================================
+    # /delay
+    # =====================================
+
+    @app.on_message(filters.command("delay"))
+    async def delay(client, message):
+
+        user_id = message.from_user.id
+
+        try:
+
+            delay_value = int(
+                message.command[1]
+            )
+
+            UBOT_DELAY[user_id] = delay_value
+
+            await message.reply_text(
+                f"""
+✅ DELAY UPDATED
+
+⏱ Delay:
+{delay_value} seconds
+"""
+            )
+
+        except:
+
+            await message.reply_text(
+                "❌ Example:\n/delay 300"
+            )
+
+    # =====================================
+    # /autobcon
+    # =====================================
+
+    @app.on_message(filters.command("autobcon"))
+    async def autobcon(client, message):
+
+        user_id = message.from_user.id
+
+        if not ACTIVE_UBOT.get(user_id):
+
+            return await message.reply_text(
+                "❌ Userbot belum aktif"
+            )
+
+        AUTO_BC[user_id] = True
+
+        await message.reply_text(
+            """
+✅ AUTO BROADCAST ENABLED
+
+🚀 AutoBC started
+"""
+        )
+
+        # =================================
+        # START USER CLIENT
+        # =================================
+
+        session_name = f"sessions/{user_id}"
+
+        user = Client(
+            session_name,
+            api_id=API_ID,
+            api_hash=API_HASH
+        )
+
+        await user.start()
+
+        while AUTO_BC.get(user_id):
+
+            text = UBOT_MESSAGE.get(
+                user_id,
+                "TEST"
+            )
+
+            delay = UBOT_DELAY.get(
+                user_id,
+                300
+            )
+
+            async for dialog in user.get_dialogs():
+
+                try:
+
+                    chat = dialog.chat
+
+                    if chat.type.name in [
+                        "GROUP",
+                        "SUPERGROUP"
+                    ]:
+
+                        await user.send_message(
+                            chat.id,
+                            text
+                        )
+
+                        await asyncio.sleep(3)
+
+                except:
+
+                    pass
+
+            await asyncio.sleep(delay)
+
+        await user.stop()
+
+    # =====================================
+    # /autobcoff
+    # =====================================
+
+    @app.on_message(filters.command("autobcoff"))
+    async def autobcoff(client, message):
+
+        user_id = message.from_user.id
+
+        AUTO_BC[user_id] = False
+
+        await message.reply_text(
+            """
+🛑 AUTO BROADCAST DISABLED
 """
         )
