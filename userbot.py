@@ -15,10 +15,10 @@ UBOT_DELAY = {}
 def load_userbot(app):
 
     # =====================================
-    # .on
+    # /on
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.on$"))
+    @app.on_message(filters.command("on"))
     async def ubot_on(_, msg):
 
         user_id = msg.from_user.id
@@ -30,10 +30,10 @@ def load_userbot(app):
         )
 
     # =====================================
-    # .off
+    # /off
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.off$"))
+    @app.on_message(filters.command("off"))
     async def ubot_off(_, msg):
 
         user_id = msg.from_user.id
@@ -45,39 +45,43 @@ def load_userbot(app):
         )
 
     # =====================================
-    # .setmsg
+    # /setmsg
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.setmsg"))
+    @app.on_message(filters.command("setmsg"))
     async def set_msg(_, msg):
 
         user_id = msg.from_user.id
 
-        text = msg.text.replace(
-            ".setmsg ",
-            ""
-        )
+        if len(msg.command) < 2:
+
+            return await msg.reply(
+                "Usage:\n/setmsg halo"
+            )
+
+        text = msg.text.split(
+            None,
+            1
+        )[1]
 
         UBOT_MESSAGE[user_id] = text
 
         await msg.reply(
-            f"✅ Message set:\n\n{text}"
+            f"✅ Message updated\n\n{text}"
         )
 
     # =====================================
-    # .delay
+    # /delay
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.delay"))
+    @app.on_message(filters.command("delay"))
     async def set_delay(_, msg):
 
         user_id = msg.from_user.id
 
         try:
 
-            delay = int(
-                msg.text.split()[1]
-            )
+            delay = int(msg.command[1])
 
             UBOT_DELAY[user_id] = delay
 
@@ -88,14 +92,14 @@ def load_userbot(app):
         except:
 
             await msg.reply(
-                "❌ Example:\n.delay 300"
+                "❌ Example:\n/delay 300"
             )
 
     # =====================================
-    # .autobc on
+    # /autobcon
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.autobc on$"))
+    @app.on_message(filters.command("autobcon"))
     async def autobc_on(_, msg):
 
         await msg.reply(
@@ -103,10 +107,10 @@ def load_userbot(app):
         )
 
     # =====================================
-    # .autobc off
+    # /autobcoff
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.autobc off$"))
+    @app.on_message(filters.command("autobcoff"))
     async def autobc_off(_, msg):
 
         await msg.reply(
@@ -114,10 +118,10 @@ def load_userbot(app):
         )
 
     # =====================================
-    # .status
+    # /status
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.status$"))
+    @app.on_message(filters.command("status"))
     async def status(_, msg):
 
         user_id = msg.from_user.id
@@ -153,10 +157,10 @@ def load_userbot(app):
         )
 
     # =====================================
-    # .ping
+    # /ping
     # =====================================
 
-    @app.on_message(filters.regex(r"^\.ping$"))
+    @app.on_message(filters.command("ping"))
     async def ping(_, msg):
 
         await msg.reply(
