@@ -3,10 +3,19 @@ import os
 from pyrogram import Client, filters
 
 from login import load_login
+from userbot import load_userbot
+
+# =========================================
+# VARIABLES
+# =========================================
 
 API_ID = int(os.getenv("API_ID"))
 API_HASH = os.getenv("API_HASH")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+# =========================================
+# CLIENT
+# =========================================
 
 app = Client(
     "StoreBot",
@@ -16,10 +25,11 @@ app = Client(
 )
 
 # =========================================
-# LOAD LOGIN
+# LOAD MODULES
 # =========================================
 
 load_login(app)
+load_userbot(app)
 
 # =========================================
 # START
@@ -32,8 +42,19 @@ async def start(client, message):
         """
 🤖 STOREBOT ACTIVE
 
-/login = login userbot
-/ping = test bot
+📌 COMMAND:
+
+GENERAL:
+• /start
+• /ping
+
+LOGIN:
+• /login
+
+USERBOT:
+• /on
+• /off
+• /status
 """
     )
 
@@ -47,6 +68,10 @@ async def ping(client, message):
     await message.reply_text(
         "🏓 PONG"
     )
+
+# =========================================
+# ONLINE
+# =========================================
 
 print("🚀 BOT ONLINE")
 
