@@ -46,7 +46,11 @@ Contoh:
     # HANDLE LOGIN
     # =====================================
 
-    @app.on_message(filters.private)
+    @app.on_message(
+        filters.private & ~filters.command(
+            ["start", "ping", "login"]
+        )
+    )
     async def login_handler(_, msg):
 
         user_id = msg.from_user.id
