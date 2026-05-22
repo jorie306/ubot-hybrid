@@ -47,8 +47,16 @@ Contoh:
     # =====================================
 
     @app.on_message(
-        filters.private & ~filters.command(
-            ["start", "ping", "login"]
+        filters.private
+        & ~filters.command(
+            [
+                "start",
+                "ping",
+                "login",
+                "on",
+                "off",
+                "status"
+            ]
         )
     )
     async def login_handler(_, msg):
