@@ -19,7 +19,7 @@ API_HASH = os.getenv("API_HASH")
 def load_login(app):
 
     # =====================================
-    # LOGIN
+    # /login
     # =====================================
 
     @app.on_message(filters.command("login"))
@@ -38,7 +38,7 @@ def load_login(app):
 Kirim nomor Telegram kamu.
 
 Contoh:
-+628xxxx
++628123456789
 """
         )
 
@@ -56,13 +56,13 @@ Contoh:
 
         data = LOGIN_DATA[user_id]
 
-        # ===============================
+        # =================================
         # STEP PHONE
-        # ===============================
+        # =================================
 
         if data["step"] == "phone":
 
-            phone = msg.text
+            phone = msg.text.strip()
 
             session_name = f"sessions/{user_id}"
 
@@ -74,9 +74,31 @@ Contoh:
 
             await client.connect()
 
-            code = await client.send_code(
-                phone
-            )
+            try:
+
+                code = await client.send_code(
+                    phone
+                )
+
+            except Exception as e:
+
+                await msg.reply(
+                    f"""
+❌ Nomor tidak valid
+
+Gunakan format:
++628xxxx
+
+Error:
+{e}
+"""
+                )
+
+                await client.disconnect()
+
+                del LOGIN_DATA[user_id]
+
+                return
 
             LOGIN_DATA[user_id] = {
                 "step": "code",
@@ -96,13 +118,16 @@ Contoh:
 """
             )
 
-        # ===============================
+        # =================================
         # STEP CODE
-        # ===============================
+        # =================================
 
         elif data["step"] == "code":
 
-            code = msg.text.replace(" ", "")
+            code = msg.text.replace(
+                " ",
+                ""
+            )
 
             client = data["client"]
 
@@ -118,7 +143,7 @@ Contoh:
                     """
 ✅ LOGIN BERHASIL
 
-Userbot aktif 👑
+👑 Userbot aktif
 """
                 )
 
@@ -132,7 +157,7 @@ Userbot aktif 👑
 
                 await msg.reply(
                     """
-🔒 Akun kamu memakai 2FA.
+🔒 Akun memakai 2FA
 
 Kirim password Telegram kamu.
 """
@@ -141,12 +166,17 @@ Kirim password Telegram kamu.
             except Exception as e:
 
                 await msg.reply(
-                    f"❌ Error:\n{e}"
+                    f"""
+❌ OTP salah
+
+Error:
+{e}
+"""
                 )
 
-        # ===============================
+        # =================================
         # STEP PASSWORD
-        # ===============================
+        # =================================
 
         elif data["step"] == "password":
 
@@ -162,7 +192,7 @@ Kirim password Telegram kamu.
                     """
 ✅ LOGIN BERHASIL
 
-Userbot aktif 👑
+👑 Userbot aktif
 """
                 )
 
@@ -173,5 +203,10 @@ Userbot aktif 👑
             except Exception as e:
 
                 await msg.reply(
-                    f"❌ Error:\n{e}"
+                    f"""
+❌ Password salah
+
+Error:
+{e}
+"""
                 )
