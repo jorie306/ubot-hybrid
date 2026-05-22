@@ -1,12 +1,10 @@
 from pyrogram import filters
 
 # =========================================
-# SETTINGS
+# USERBOT DATA
 # =========================================
 
-UBOT_STATUS = {}
-UBOT_MESSAGE = {}
-UBOT_DELAY = {}
+ACTIVE_UBOT = {}
 
 # =========================================
 # LOAD USERBOT
@@ -23,10 +21,15 @@ def load_userbot(app):
 
         user_id = msg.from_user.id
 
-        UBOT_STATUS[user_id] = True
+        ACTIVE_UBOT[user_id] = True
 
         await msg.reply(
-            "✅ USERBOT ACTIVE"
+            """
+✅ USERBOT ACTIVE
+
+🚀 Session detected
+👤 Userbot online
+"""
         )
 
     # =====================================
@@ -38,83 +41,12 @@ def load_userbot(app):
 
         user_id = msg.from_user.id
 
-        UBOT_STATUS[user_id] = False
+        ACTIVE_UBOT[user_id] = False
 
         await msg.reply(
-            "🛑 USERBOT OFF"
-        )
-
-    # =====================================
-    # /setmsg
-    # =====================================
-
-    @app.on_message(filters.command("setmsg"))
-    async def set_msg(_, msg):
-
-        user_id = msg.from_user.id
-
-        if len(msg.command) < 2:
-
-            return await msg.reply(
-                "Usage:\n/setmsg halo"
-            )
-
-        text = msg.text.split(
-            None,
-            1
-        )[1]
-
-        UBOT_MESSAGE[user_id] = text
-
-        await msg.reply(
-            f"✅ Message updated\n\n{text}"
-        )
-
-    # =====================================
-    # /delay
-    # =====================================
-
-    @app.on_message(filters.command("delay"))
-    async def set_delay(_, msg):
-
-        user_id = msg.from_user.id
-
-        try:
-
-            delay = int(msg.command[1])
-
-            UBOT_DELAY[user_id] = delay
-
-            await msg.reply(
-                f"✅ Delay set to {delay}s"
-            )
-
-        except:
-
-            await msg.reply(
-                "❌ Example:\n/delay 300"
-            )
-
-    # =====================================
-    # /autobcon
-    # =====================================
-
-    @app.on_message(filters.command("autobcon"))
-    async def autobc_on(_, msg):
-
-        await msg.reply(
-            "✅ AUTOBC ENABLED"
-        )
-
-    # =====================================
-    # /autobcoff
-    # =====================================
-
-    @app.on_message(filters.command("autobcoff"))
-    async def autobc_off(_, msg):
-
-        await msg.reply(
-            "🛑 AUTOBC DISABLED"
+            """
+🛑 USERBOT OFFLINE
+"""
         )
 
     # =====================================
@@ -122,23 +54,13 @@ def load_userbot(app):
     # =====================================
 
     @app.on_message(filters.command("status"))
-    async def status(_, msg):
+    async def ubot_status(_, msg):
 
         user_id = msg.from_user.id
 
-        status = UBOT_STATUS.get(
+        status = ACTIVE_UBOT.get(
             user_id,
             False
-        )
-
-        text = UBOT_MESSAGE.get(
-            user_id,
-            "Belum diset"
-        )
-
-        delay = UBOT_DELAY.get(
-            user_id,
-            300
         )
 
         await msg.reply(
@@ -148,21 +70,7 @@ def load_userbot(app):
 👤 Active:
 {status}
 
-📢 Message:
-{text}
-
-⏱ Delay:
-{delay}
+✅ Railway Online
+✅ Session Ready
 """
-        )
-
-    # =====================================
-    # /ping
-    # =====================================
-
-    @app.on_message(filters.command("ping"))
-    async def ping(_, msg):
-
-        await msg.reply(
-            "🏓 Pong!"
         )
