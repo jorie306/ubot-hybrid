@@ -14,6 +14,7 @@ from pyrogram.types import (
 
 from panel import load_panel
 from autobc import load_autobc
+from login import load_login
 
 # =========================================
 # VARIABLES
@@ -34,9 +35,17 @@ db = sqlite3.connect(
 
 cursor = db.cursor()
 
+# USERS
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER PRIMARY KEY
+)
+""")
+
+# GROUPS
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS groups (
+    chat_id INTEGER PRIMARY KEY
 )
 """)
 
@@ -60,9 +69,10 @@ app = Client(
 
 load_panel(app)
 load_autobc(app)
+load_login(app)
 
 # =========================================
-# START BUTTON
+# BUTTONS
 # =========================================
 
 START_BUTTON = InlineKeyboardMarkup(
@@ -73,8 +83,8 @@ START_BUTTON = InlineKeyboardMarkup(
                 callback_data="premium"
             ),
             InlineKeyboardButton(
-                "🛒 Buy",
-                callback_data="buy"
+                "🚀 Login Userbot",
+                callback_data="login"
             )
         ],
         [
@@ -87,7 +97,7 @@ START_BUTTON = InlineKeyboardMarkup(
 )
 
 # =========================================
-# START COMMAND
+# START
 # =========================================
 
 @app.on_message(filters.command("start"))
@@ -108,8 +118,8 @@ async def start(_, msg):
 ✅ Bot Online
 ✅ Broadcast Ready
 ✅ Auto BC Ready
+✅ Userbot Login Ready
 ✅ Panel Ready
-✅ Railway Connected
 """
 
     await msg.reply(
@@ -118,7 +128,23 @@ async def start(_, msg):
     )
 
 # =========================================
-# HELP COMMAND
+# SAVE GROUP
+# =========================================
+
+@app.on_message(filters.group)
+async def save_group(_, msg):
+
+    chat_id = msg.chat.id
+
+    cursor.execute(
+        "INSERT OR IGNORE INTO groups(chat_id) VALUES(?)",
+        (chat_id,)
+    )
+
+    db.commit()
+
+# =========================================
+# HELP
 # =========================================
 
 @app.on_message(filters.command("help"))
@@ -130,6 +156,7 @@ async def help_cmd(_, msg):
 GENERAL:
 • /start
 • /help
+• /login
 
 PANEL:
 • /panel
@@ -148,7 +175,7 @@ AUTO BC:
     await msg.reply(text)
 
 # =========================================
-# BROADCAST
+# BROADCAST USER
 # =========================================
 
 @app.on_message(filters.command("bc"))
@@ -207,7 +234,7 @@ async def broadcast(_, msg):
     )
 
 # =========================================
-# CALLBACK BUTTON
+# CALLBACK
 # =========================================
 
 @app.on_callback_query()
@@ -226,14 +253,15 @@ Hubungi owner untuk membeli akses premium.
 """
         )
 
-    # BUY
-    elif data == "buy":
+    # LOGIN
+    elif data == "login":
 
         await query.message.reply(
             """
-🛒 PEMBELIAN PREMIUM
+🚀 LOGIN USERBOT
 
-Silahkan hubungi owner/admin.
+Ketik:
+/login
 """
         )
 
