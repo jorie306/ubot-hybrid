@@ -1,3 +1,5 @@
+print("USERBOT MODULE LOADED")
+
 from pyrogram import filters
 
 # =========================================
@@ -12,23 +14,26 @@ ACTIVE_UBOT = {}
 
 def load_userbot(app):
 
+    print("LOAD USERBOT BERHASIL")
+
     # =====================================
     # /on
     # =====================================
 
     @app.on_message(filters.command("on"))
-    async def ubot_on(_, msg):
+    async def ubot_on(client, message):
 
-        user_id = msg.from_user.id
+        user_id = message.from_user.id
 
         ACTIVE_UBOT[user_id] = True
 
-        await msg.reply(
+        print("COMMAND ON MASUK")
+
+        await message.reply_text(
             """
 ✅ USERBOT ACTIVE
 
-🚀 Session detected
-👤 Userbot online
+🚀 Userbot online
 """
         )
 
@@ -37,16 +42,16 @@ def load_userbot(app):
     # =====================================
 
     @app.on_message(filters.command("off"))
-    async def ubot_off(_, msg):
+    async def ubot_off(client, message):
 
-        user_id = msg.from_user.id
+        user_id = message.from_user.id
 
         ACTIVE_UBOT[user_id] = False
 
-        await msg.reply(
-            """
-🛑 USERBOT OFFLINE
-"""
+        print("COMMAND OFF MASUK")
+
+        await message.reply_text(
+            "🛑 USERBOT OFFLINE"
         )
 
     # =====================================
@@ -54,23 +59,22 @@ def load_userbot(app):
     # =====================================
 
     @app.on_message(filters.command("status"))
-    async def ubot_status(_, msg):
+    async def ubot_status(client, message):
 
-        user_id = msg.from_user.id
+        user_id = message.from_user.id
 
         status = ACTIVE_UBOT.get(
             user_id,
             False
         )
 
-        await msg.reply(
+        print("COMMAND STATUS MASUK")
+
+        await message.reply_text(
             f"""
 📊 USERBOT STATUS
 
 👤 Active:
 {status}
-
-✅ Railway Online
-✅ Session Ready
 """
         )
