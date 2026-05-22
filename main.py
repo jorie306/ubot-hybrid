@@ -2,11 +2,7 @@ import os
 import sqlite3
 import asyncio
 
-from pyrogram import (
-    Client,
-    filters
-)
-
+from pyrogram import Client, filters
 from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
@@ -68,10 +64,19 @@ app = Client(
 # LOAD MODULES
 # =========================================
 
+print("LOAD PANEL")
 load_panel(app)
+
+print("LOAD AUTOBC")
 load_autobc(app)
+
+print("LOAD LOGIN")
 load_login(app)
+
+print("LOAD USERBOT")
 load_userbot(app)
+
+print("SEMUA MODULE BERHASIL")
 
 # =========================================
 # BUTTONS
@@ -120,9 +125,8 @@ async def start(_, msg):
 ✅ Bot Online
 ✅ Broadcast Ready
 ✅ Auto BC Ready
-✅ Userbot Ready
 ✅ Login Session Ready
-✅ Panel Ready
+✅ Userbot Ready
 """
 
     await msg.reply(
@@ -161,31 +165,17 @@ GENERAL:
 • /help
 • /login
 
-PANEL:
-• /panel
-• /addadmin
+USERBOT:
+• /ping
 
 BROADCAST:
 • /bc pesan
-
-AUTO BC BOT:
-• /autobc pesan
-• /setdelay 300
-• /autobcon
-• /autobcoff
-
-USERBOT:
-• /uboton
-• /setubotmsg
-• /setubotdelay
-• /ubotautobcon
-• /ubotautobcoff
 """
 
     await msg.reply(text)
 
 # =========================================
-# BROADCAST USER
+# BROADCAST
 # =========================================
 
 @app.on_message(filters.command("bc"))
