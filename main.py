@@ -15,6 +15,7 @@ from pyrogram.types import (
 from panel import load_panel
 from autobc import load_autobc
 from login import load_login
+from userbot import load_userbot
 
 # =========================================
 # VARIABLES
@@ -70,6 +71,7 @@ app = Client(
 load_panel(app)
 load_autobc(app)
 load_login(app)
+load_userbot(app)
 
 # =========================================
 # BUTTONS
@@ -118,7 +120,8 @@ async def start(_, msg):
 ✅ Bot Online
 ✅ Broadcast Ready
 ✅ Auto BC Ready
-✅ Userbot Login Ready
+✅ Userbot Ready
+✅ Login Session Ready
 ✅ Panel Ready
 """
 
@@ -165,11 +168,18 @@ PANEL:
 BROADCAST:
 • /bc pesan
 
-AUTO BC:
+AUTO BC BOT:
 • /autobc pesan
 • /setdelay 300
 • /autobcon
 • /autobcoff
+
+USERBOT:
+• /uboton
+• /setubotmsg
+• /setubotdelay
+• /ubotautobcon
+• /ubotautobcoff
 """
 
     await msg.reply(text)
