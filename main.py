@@ -13,6 +13,7 @@ from pyrogram.types import (
 )
 
 from panel import load_panel
+from autobc import load_autobc
 
 # =========================================
 # VARIABLES
@@ -54,10 +55,11 @@ app = Client(
 )
 
 # =========================================
-# LOAD PANEL
+# LOAD MODULES
 # =========================================
 
 load_panel(app)
+load_autobc(app)
 
 # =========================================
 # START BUTTON
@@ -105,6 +107,7 @@ async def start(_, msg):
 
 ✅ Bot Online
 ✅ Broadcast Ready
+✅ Auto BC Ready
 ✅ Panel Ready
 ✅ Railway Connected
 """
@@ -124,20 +127,22 @@ async def help_cmd(_, msg):
     text = """
 📌 STOREBOT MENU
 
-AVAILABLE COMMANDS:
-
+GENERAL:
 • /start
 • /help
+
+PANEL:
 • /panel
-• /bc
-
-👑 OWNER:
 • /addadmin
-• /addseller
-• /addprem
 
-📣 BROADCAST:
+BROADCAST:
 • /bc pesan
+
+AUTO BC:
+• /autobc pesan
+• /setdelay 300
+• /autobcon
+• /autobcoff
 """
 
     await msg.reply(text)
@@ -210,6 +215,7 @@ async def callback(_, query):
 
     data = query.data
 
+    # PREMIUM
     if data == "premium":
 
         await query.message.reply(
@@ -220,6 +226,7 @@ Hubungi owner untuk membeli akses premium.
 """
         )
 
+    # BUY
     elif data == "buy":
 
         await query.message.reply(
