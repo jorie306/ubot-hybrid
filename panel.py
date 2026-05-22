@@ -1,79 +1,69 @@
+print("USERBOT FILE TERBACA")
+
 from pyrogram import filters
-from pyrogram.types import (
-    InlineKeyboardMarkup,
-    InlineKeyboardButton
-)
-
-from database import (
-    get_role,
-    set_role,
-    has_access
-)
 
 # =========================================
-# PANEL BUTTON
+# LOAD USERBOT
 # =========================================
 
-OWNER_PANEL = InlineKeyboardMarkup(
-    [
-        [
-            InlineKeyboardButton(
-                "👑 Add Admin",
-                callback_data="add_admin"
-            )
-        ]
-    ]
-)
+def load_userbot(app):
 
-# =========================================
-# LOAD APP
-# =========================================
-
-def load_panel(app):
+    print("LOAD USERBOT FUNCTION JALAN")
 
     # =====================================
-    # PANEL
+    # /ping
     # =====================================
 
-    @app.on_message(filters.command("panel"))
-    async def panel_cmd(_, msg):
+    @app.on_message(filters.command("ping"))
+    async def ping(client, message):
 
-        role = get_role(msg.from_user.id)
+        print("COMMAND /ping MASUK")
 
-        if role != "OWNER":
-
-            return await msg.reply(
-                "❌ Kamu bukan owner"
-            )
-
-        await msg.reply(
-            "👑 OWNER PANEL ACTIVE",
-            reply_markup=OWNER_PANEL
+        await message.reply_text(
+            "🏓 PONG BERHASIL"
         )
 
     # =====================================
-    # ADD ADMIN
+    # /on
     # =====================================
 
-    @app.on_message(filters.command("addadmin"))
-    async def add_admin(_, msg):
+    @app.on_message(filters.command("on"))
+    async def on_cmd(client, message):
 
-        if get_role(msg.from_user.id) != "OWNER":
+        print("COMMAND /on MASUK")
 
-            return await msg.reply(
-                "❌ Owner only"
-            )
+        await message.reply_text(
+            "✅ USERBOT ACTIVE"
+        )
 
-        if len(msg.command) < 2:
+    # =====================================
+    # /off
+    # =====================================
 
-            return await msg.reply(
-                "Usage:\n/addadmin user_id"
-            )
+    @app.on_message(filters.command("off"))
+    async def off_cmd(client, message):
 
-        target = int(msg.command[1])
+        print("COMMAND /off MASUK")
 
-        set_role(target, "ADMIN")
+        await message.reply_text(
+            "🛑 USERBOT OFF"
+        )
 
-        await msg.reply(
-            f"✅ {target} sekarang ADMIN"
+    # =====================================
+    # /status
+    # =====================================
+
+    @app.on_message(filters.command("status"))
+    async def status_cmd(client, message):
+
+        print("COMMAND /status MASUK")
+
+        await message.reply_text(
+            """
+📊 USERBOT STATUS
+
+✅ Module Loaded
+✅ Commands Working
+✅ Railway Active
+"""
         )
