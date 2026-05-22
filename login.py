@@ -55,13 +55,21 @@ Contoh:
                 "login",
                 "on",
                 "off",
-                "status"
+                "status",
+                "setmsg",
+                "delay",
+                "autobcon",
+                "autobcoff"
             ]
         )
     )
     async def login_handler(_, msg):
 
         user_id = msg.from_user.id
+
+        # =================================
+        # USER TIDAK LOGIN
+        # =================================
 
         if user_id not in LOGIN_DATA:
             return
